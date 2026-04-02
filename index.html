@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Data Mahasiswa</title>
+</head>
+<body>
+
+  <h2>Input Data Mahasiswa</h2>
+
+  <label>NIM</label><br>
+  <input type="text" id="nim"><br><br>
+
+  <label>Nama</label><br>
+  <input type="text" id="nama"><br><br>
+
+  <button onclick="tambahData()">Simpan</button>
+
+  <h3>Daftar Mahasiswa</h3>
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>NIM</th>
+        <th>Nama</th>
+      </tr>
+    </thead>
+    <tbody id="tabel"></tbody>
+  </table>
+
+  <script>
+    async function loadData() {
+      const res = await fetch("/data");
+      const data = await res.json();
+
+      const tabel = document.getElementById("tabel");
+      tabel.innerHTML = "";
+
+      data.forEach(mhs => {
+        const row = `
+          <tr>
+            <td>${mhs.nim}</td>
+            <td>${mhs.nama}</td>
+          </tr>
+        `;
+        tabel.innerHTML += row;
+      });
+    }
+
+    async function tambahData() {
+      const nim = document.getElementById("nim").value;
+      const nama = document.getElementById("nama").value;
+
+      await fetch("/data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nim, nama })
+      });
+
+      document.getElementById("nim").value = "";
+      document.getElementById("nama").value = "";
+
+      loadData();
+    }
+
+    loadData();
+  </script>
+
+</body>
+</html>
